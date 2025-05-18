@@ -1,0 +1,10 @@
+flask
+gunicorn
+supabase
+requests
+psycopg2-binary
+paramiko
+streamlit
+pandas
+openpyxl
+python-dotenv

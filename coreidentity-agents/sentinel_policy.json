@@ -1,0 +1,32 @@
+[
+  {
+    "id": "HIPAA-23.7",
+    "description": "Block unencrypted access to PHI",
+    "trigger": "data_access",
+    "conditions": [
+      {"data_class": "PHI"},
+      {"encryption": false}
+    ],
+    "action": "block",
+    "severity": "high"
+  },
+  {
+    "id": "GDPR-01",
+    "description": "Require consent for user data storage",
+    "trigger": "data_storage",
+    "conditions": [
+      {"user_consent": false},
+      {"data_type": "personal"}
+    ],
+    "action": "quarantine",
+    "severity": "medium"
+  },
+  {
+    "id": "DEFAULT-ALLOW",
+    "description": "Allow all other actions",
+    "trigger": "*",
+    "conditions": [],
+    "action": "allow",
+    "severity": "low"
+  }
+]

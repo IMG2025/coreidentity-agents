@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: coreidentity-backend
+    runtime: python
+    buildCommand: ""
+    startCommand: gunicorn main:app
+
+  - type: web
+    name: visualops-dashboard
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: |
+      python3 coreidentity-agents/signalfetch.py && \
+      streamlit run coreidentity-agents/dashboard.py --server.port $PORT
+    envVars:
+      - key: TOAST_SFTP_USERNAME
+        fromService: signalfetch-toast-export
+        fromEnvVar: TOAST_SFTP_USERNAME
+      - key: TOAST_SFTP_HOST
+        fromService: signalfetch-toast-export
+        fromEnvVar: TOAST_SFTP_HOST
+      - key: TOAST_SFTP_PRIVATE_KEY
+        fromService: signalfetch-toast-export
+        fromEnvVar: TOAST_SFTP_PRIVATE_KEY
+      - key: TELEGRAM_TOKEN
+        fromService: signalfetch-toast-export
+        fromEnvVar: TELEGRAM_TOKEN
+      - key: TELEGRAM_CHAT_ID
+        fromService: signalfetch-toast-export
+        fromEnvVar: TELEGRAM_CHAT_ID
+
+  - type: worker
+    name: signalfetch-toast-export
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python3 coreidentity-agents/signalfetch.py
+    envVars:
+      - key: TOAST_SFTP_USERNAME
+        value: PaulFrenchBakeryDataExports
+      - key: TOAST_SFTP_HOST
+        value: s-9b0f88558b264dfda.server.transfer.us-east-1.amazonaws.com
+      - key: TOAST_SFTP_PRIVATE_KEY
+        value: ${TOAST_SFTP_PRIVATE_KEY_B64}  # This assumes you're decoding this in the script
+      - key: TELEGRAM_TOKEN
+        value: your_telegram_token_here
+      - key: TELEGRAM_CHAT_ID
+        value: your_telegram_chat_id_here
